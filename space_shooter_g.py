@@ -1,29 +1,19 @@
 import pgzrun
 import pygame
-import random
 
 # Globale Variablen
 WIDTH = 1280
 HEIGHT = 720
-GRAVITY = 0.02
 
-MOVE_SPEED= 10
+MOVE_SPEED= 5
 
 background = None
 
 # Charakter 
-ship  = Actor("spaceships_001.png", anchor=("center","bottom"))
-ship.midbottom  = (600,500)
-
-# Erzeuge Meteoriten zufällig oben im Spielfeld
-def spawn_meteor(image):
-    meteor = Actor(image)
-    meteor.x = random.randint(50, WIDTH - 50)
-    meteor.y = random.randint(-120, 50)
-    meteor.vy = 0
-    return meteor
-
-meteors = [spawn_meteor("spacemeteors_001.png"), spawn_meteor("spacemeteors_002.png")]
+ship  = Actor("spaceships_007.png", anchor=("center","bottom"))
+ship.midbottom  = (600,550)
+ship.angle = 180  # Schiff umdrehen, damit es auf dem Kopf steht
+meteors= [Actor("meteorbrown_big1.png", topleft=(100, 100)), Actor("meteorbrown_big2.png", topleft=(700, 200))]
 
 # Schüsse
 bullets = []
@@ -31,7 +21,7 @@ bullets = []
 def draw():
     global background
 
-    if background is None:
+    if background is None: 
         background = pygame.image.load("images/darkpurple.png")
         background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
@@ -56,22 +46,7 @@ def update():
         ship.vx = -MOVE_SPEED
     elif keyboard.right:
         ship.vx = MOVE_SPEED
-    
-    #x Bewegung ausführen
-    ship.x = ship.x + ship.vx
 
-    # y Geschwindigkeit meteoriden berechen und anwenden ( Bewegung oben unten)
-    for meteor in meteors:
-        # Gravitation hinzufügen
-        meteor.vy = meteor.vy + GRAVITY
-        # y Bewegung ausführen
-        meteor.y = meteor.y + meteor.vy
-
-        # Meteor oben neu erscheinen lassen, wenn er unten aus dem Bildschirm fällt
-        if meteor.top > HEIGHT:
-            meteor.x = random.randint(50, WIDTH - 50)
-            meteor.y = random.randint(-120, 50)
-            meteor.vy = 0
     # Schiff bewegen
     ship.x += ship.vx
 
@@ -84,6 +59,11 @@ def update():
 
     # Schüsse abfeuern bei Leertaste
     if keyboard.space:
-        bullet = Actor("spacerockets_001.png", center=ship.center)  # Verwende Raketen-Bild als Schuss
+        bullet = Actor("effect_yellow.png", center=ship.center)  # Verwende gebe Funken als Bild für Schüssse
         bullet.y -= 20  # Etwas oberhalb des Schiffes starten
         bullets.append(bullet)
+
+    #Kollision zwischen Schüssen und Meteoriten überprüfen
+     
+
+pgzrun.go()
