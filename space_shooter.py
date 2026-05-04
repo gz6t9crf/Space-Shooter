@@ -1,19 +1,29 @@
 import pgzrun
 import pygame
+import random
 
 # Globale Variablen
 WIDTH = 1280
 HEIGHT = 720
+GRAVITY = 0.02
 
-MOVE_SPEED= 5
+MOVE_SPEED= 10
 
 background = None
 
 # Charakter 
 ship  = Actor("spaceships_001.png", anchor=("center","bottom"))
-ship.midbottom  = (600,500)
+ship.midbottom  = (600,700)
 
-meteors= [Actor("spacemeteors_001.png", topleft=(100, 100)), Actor("spacemeteors_002.png", topleft=(700, 200))]
+# Erzeuge Meteoriten zufällig oben im Spielfeld
+def spawn_meteor(image):
+    meteor = Actor(image)
+    meteor.x = random.randint(50, WIDTH - 50)
+    meteor.y = random.randint(-120, 50)
+    meteor.vy = 0
+    return meteor
+
+meteors = [spawn_meteor("spacemeteors_001.png"), spawn_meteor("spacemeteors_002.png")]
 
 
 def draw():
@@ -40,6 +50,21 @@ def update():
         ship.vx = -MOVE_SPEED
     elif keyboard.right:
         ship.vx = MOVE_SPEED
+    
+    #x Bewegung ausführen
+    ship.x = ship.x + ship.vx
 
+    # y Geschwindigkeit meteoriden berechen und anwenden ( Bewegung oben unten)
+    for meteor in meteors:
+        # Gravitation hinzufügen
+        meteor.vy = meteor.vy + GRAVITY
+        # y Bewegung ausführen
+        meteor.y = meteor.y + meteor.vy
+
+        # Meteor oben neu erscheinen lassen, wenn er unten aus dem Bildschirm fällt
+        if meteor.top > HEIGHT:
+            meteor.x = random.randint(50, WIDTH - 50)
+            meteor.y = random.randint(-120, 50)
+            meteor.vy = 0
 
 pgzrun.go()
