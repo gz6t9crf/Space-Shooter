@@ -12,8 +12,10 @@ MOVE_SPEED= 10
 background = None
 
 # Charakter 
-ship  = Actor("spaceships_001.png", anchor=("center","bottom"))
-ship.midbottom  = (600,500)
+ship  = Actor("spaceships_007.png", anchor=("center","bottom"))
+ship.midbottom  = (600,550)
+ship.angle = 180  # Schiff umdrehen, damit es auf dem Kopf steht
+
 
 # Erzeuge Meteoriten zufällig oben im Spielfeld
 def spawn_meteor(image):
@@ -23,10 +25,21 @@ def spawn_meteor(image):
     meteor.vy = 0
     return meteor
 
-meteors = [spawn_meteor("spacemeteors_001.png"), spawn_meteor("spacemeteors_002.png")]
+meteors = []
+meteor1 = Actor("meteorbrown_big1.png", topleft=(100, 100))
+meteor1.vy = 0
+meteors.append(meteor1)
+
+meteor2 = Actor("meteorbrown_big2.png", topleft=(700, 200))
+meteor2.vy = 0
+meteors.append(meteor2)
 
 # Schüsse
 bullets = []
+
+# Meteor Spawn Timer
+meteor_spawn_counter = 0
+meteor_spawn_interval = 500  # Neuer Meteor alle 500 Frames
 
 def draw():
     global background
@@ -50,6 +63,15 @@ def draw():
         bullet.draw()
 
 def update():
+    global meteor_spawn_counter
+    
+    # Zufällig neue Meteore spawnen
+    meteor_spawn_counter += 1
+    if meteor_spawn_counter >= meteor_spawn_interval:
+        new_meteor = spawn_meteor("meteorbrown_big1.png")
+        meteors.append(new_meteor)
+        meteor_spawn_counter = 0
+    
     # x Geschwindigkeit berechnen (Bewegung links rechts)
     ship.vx = 0 
     if keyboard.left:
@@ -59,6 +81,11 @@ def update():
     
     #x Bewegung ausführen
     ship.x = ship.x + ship.vx
+
+    # Raumschiff an den Bildschirmgrenzen begrenzen
+    ship.x = max(50, min(ship.x, WIDTH - 50))
+
+
 
     # y Geschwindigkeit meteoriden berechen und anwenden ( Bewegung oben unten)
     for meteor in meteors:
@@ -84,6 +111,8 @@ def update():
 
     # Schüsse abfeuern bei Leertaste
     if keyboard.space:
-        bullet = Actor("spacerockets_001.png", center=ship.center)  # Verwende Raketen-Bild als Schuss
+        bullet = Actor("effect_yellow.png", center=ship.center)  # Verwende gelben Strahl als Schuss
         bullet.y -= 20  # Etwas oberhalb des Schiffes starten
         bullets.append(bullet)
+
+pgzrun.go()
