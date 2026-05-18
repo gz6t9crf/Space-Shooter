@@ -38,7 +38,7 @@ meteors.append(meteor2)
 bullets = []
 
 # Leben
-lives = 3
+lives = 5
 
 # Spielzustand
 started = False
@@ -113,6 +113,10 @@ def update():
 
         # Meteor oben neu erscheinen lassen, wenn er unten aus dem Bildschirm fällt
         if meteor.top > HEIGHT:
+            lives -= 1
+            if lives <= 0:
+                lives = 0
+                game_over = True
             meteor.x = random.randint(50, WIDTH - 50)
             meteor.y = random.randint(-120, 50)
             meteor.vy = 0
@@ -155,17 +159,21 @@ def fire_bullet():
 
 
 def reset_game():
-    global lives, game_over, started, meteors, bullets, meteor_spawn_counter
+    global lives, game_over, started, meteors, bullets, meteor_spawn_counter, ship
 
-    lives = 3
+    lives = 5
     game_over = False
     started = False
     bullets.clear()
     meteors.clear()
     meteor_spawn_counter = 0
-    
-    ship  = Actor("spaceships_007.png", anchor=(600, 550))
+    # Neu erzeuge das Schiff wie beim Programmstart und setze Position/Geschwindigkeit
+    ship = Actor("spaceships_007.png", anchor=("center","bottom"))
     ship.midbottom = (SHIP_START_X, SHIP_START_Y)
+    ship.x = SHIP_START_X
+    ship.y = SHIP_START_Y
+    ship.vx = 0
+    ship.vy = 0
     ship.angle = 180
 
     meteors.append(spawn_meteor("meteorbrown_big1.png"))
